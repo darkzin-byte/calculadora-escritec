@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Escritec - Cálculos Adicionais</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4faff;
+            color: #333;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #005ba1;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input, select {
+            padding: 5px;
+            margin-top: 5px;
+            width: 250px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: #005ba1;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background-color: #00457d;
+        }
+
+        #tabelaResultados {
+            margin-top: 0;
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        #tabelaResultados th, #tabelaResultados td {
+            border: 1px solid #cce4f7;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #tabelaResultados th {
+            background-color: #005ba1;
+            color: white;
+        }
+
+        #tabelaResultados td {
+            background-color: #ffffff;
+        }
+
+        .container-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .form-section {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .tabela-section {
+            flex: 1;
+            min-width: 320px;
+        }
+		@media (max-width: 768px) {
+		    .container-flex {
+			    flex-direction: column;
+		    }
+		}
+    </style>
+</head>
+<body>
+
+<h1>Calculo de Adicionais - ESCRITEC</h1>
+
+<div class="container-flex">
+
+    <div class="form-section">
+        <label for="Cargos">Qual o cargo?</label>
+        <select name="Cargos" id="Cargos" onchange="atualizarSalario()">
+            <option value="" disabled selected>Escolha o cargo</option>
+            <option value="acougueiro" data-salario="1909.17">Açougueiro</option>
+            <option value="padeiro" data-salario="1800">Padeiro</option>
+            <option value="atendente de padaria" data-salario="1689.04">Atendente de Padaria</option>
+            <option value="caixa" data-salario="1695.74">Caixa</option>
+            <option value="repositor" data-salario="1690.82">Repositor</option>
+			<option value="salario_minimo" data-salario="1518">Base no salário mínimo</option>
+        </select>
+
+        <label>Salário Base:</label>
+        <input type="text" id="salario" readonly>
+
+        <label>Domingos ou Feriados:</label>
+        <input type="number" id="domingosFeriados" min="0">
+
+        <label>Horas Extras (em minutos):</label>
+        <input type="number" id="horasExtras" min="0">
+
+        <label>Dobras:</label>
+        <input type="number" id="dobras" min="0">
+
+        <label>Dobras de Domingo:</label>
+        <input type="number" id="dobrasDomingo" min="0">
+
+        <label>Dias a Descontar:</label>
+        <input type="number" id="descontarDias" min="0">
+
+        <label>Dias a Adicionar:</label>
+        <input type="number" id="adicionarDias" min="0">
+
+        <div class="button-container">
+            <button class="btn" onclick="calcularSalario()">Calcular</button>
+            <button class="btn" onclick="limparTudo()">Limpar Tudo</button>
+        </div>
+    </div>
+
+    <div class="tabela-section">
+        <table id="tabelaResultados">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Domingos e Feriados</td><td id="valorDomingoFeriado">R$ 0,00</td></tr>
+                <tr><td>Horas Extras</td><td id="valorHorasExtras">R$ 0,00</td></tr>
+                <tr><td>Dobras</td><td id="valorDobras">R$ 0,00</td></tr>
+                <tr><td>Dobras de Domingo</td><td id="valorDobrasDomingo">R$ 0,00</td></tr>
+                <tr><td>Descontar Dias</td><td id="valorDescontarDias">R$ 0,00</td></tr>
+                <tr><td>Adicionar Dias</td><td id="valorAdicionarDias">R$ 0,00</td></tr>
+                <tr><td>Insalubridade (Açougueiro)</td><td id="valorInsalubridade">R$ 0,00</td></tr>
+                <tr><td>Quebra de Caixa</td><td id="valorQuebraCaixa">R$ 0,00</td></tr>
+                <tr><td><strong>Total de Adicionais</strong></td><td id="valorAdicionais"><strong>R$ 0,00</strong></td></tr>
+                <tr><td><strong>Salário Total com Adicionais</strong></td><td id="valorTotal"><strong>R$ 0,00</strong></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    function atualizarSalario() {
+        let cargoSelecionado = document.getElementById("Cargos");
+        let salarioBaseStr = cargoSelecionado.options[cargoSelecionado.selectedIndex].getAttribute("data-salario");
+        let salarioBase = parseFloat(salarioBaseStr.replace(',', '.'));
+        document.getElementById("salario").value = salarioBase.toFixed(2);
+    }
+
+    function formatarMoeda(valor) {
+        return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function calcularSalario() {
+        let cargoSelecionado = document.getElementById("Cargos");
+        let cargo = cargoSelecionado.value;
+        let salario = parseFloat(document.getElementById("salario").value) || 0;
+        let domingosFeriados = parseFloat(document.getElementById("domingosFeriados").value) || 0;
+        let horasExtras = parseFloat(document.getElementById("horasExtras").value) || 0;
+        let dobras = parseFloat(document.getElementById("dobras").value) || 0;
+        let dobrasDomingo = parseFloat(document.getElementById("dobrasDomingo").value) || 0;
+        let descontarDias = parseFloat(document.getElementById("descontarDias").value) || 0;
+        let adicionarDias = parseFloat(document.getElementById("adicionarDias").value) || 0;
+
+        let valorDomingoFeriado = salario / 30 * 2 * domingosFeriados;
+        let valorHorasExtras = salario / 30 / 8 / 60 * horasExtras;
+        let valorDobras = salario / 30 * dobras;
+        let valorDobrasDomingo = salario / 30 * 4 * dobrasDomingo;
+        let valorDescontarDias = salario / 30 * descontarDias;
+        let valorAdicionarDias = salario / 30 * adicionarDias;
+
+        let insalubridade = 0;
+        if (cargo === "acougueiro") {
+            insalubridade = 303.60 * ((30 - descontarDias) / 30);
+        }
+
+        let quebraCaixa = 0;
+if (cargo === "caixa") {
+    let valorTotalQuebra = salario * 0.10;
+    quebraCaixa = valorTotalQuebra * ((30 - descontarDias) / 30);
+}
+
+        let adicionais = valorDomingoFeriado + valorHorasExtras + valorDobras + valorDobrasDomingo + valorAdicionarDias - valorDescontarDias + insalubridade + quebraCaixa;
+        let salarioTotal = salario + adicionais;
+
+        document.getElementById("valorDomingoFeriado").textContent = formatarMoeda(valorDomingoFeriado);
+        document.getElementById("valorHorasExtras").textContent = formatarMoeda(valorHorasExtras);
+        document.getElementById("valorDobras").textContent = formatarMoeda(valorDobras);
+        document.getElementById("valorDobrasDomingo").textContent = formatarMoeda(valorDobrasDomingo);
+        document.getElementById("valorDescontarDias").textContent = formatarMoeda(-valorDescontarDias);
+        document.getElementById("valorAdicionarDias").textContent = formatarMoeda(valorAdicionarDias);
+        document.getElementById("valorInsalubridade").textContent = formatarMoeda(insalubridade);
+        document.getElementById("valorQuebraCaixa").textContent = formatarMoeda(quebraCaixa);
+        document.getElementById("valorAdicionais").textContent = formatarMoeda(adicionais);
+        document.getElementById("valorTotal").textContent = formatarMoeda(salarioTotal);
+    }
+
+    function limparTudo() {
+    document.getElementById("Cargos").selectedIndex = 0;
+    document.getElementById("salario").value = '';
+    document.querySelectorAll("input[type='number']").forEach(input => input.value = '');
+
+    // Apenas reseta os valores das células de resultado, sem apagar as descrições
+    document.getElementById("valorDomingoFeriado").textContent = "R$ 0,00";
+    document.getElementById("valorHorasExtras").textContent = "R$ 0,00";
+    document.getElementById("valorDobras").textContent = "R$ 0,00";
+    document.getElementById("valorDobrasDomingo").textContent = "R$ 0,00";
+    document.getElementById("valorDescontarDias").textContent = "R$ 0,00";
+    document.getElementById("valorAdicionarDias").textContent = "R$ 0,00";
+    document.getElementById("valorInsalubridade").textContent = "R$ 0,00";
+    document.getElementById("valorQuebraCaixa").textContent = "R$ 0,00";
+    document.getElementById("valorAdicionais").textContent = "R$ 0,00";
+    document.getElementById("valorTotal").textContent = "R$ 0,00";
+}
+</script>
+
+</body>
+</html>
