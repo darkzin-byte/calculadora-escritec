@@ -203,7 +203,7 @@ if (cargo === "caixa") {
     quebraCaixa = valorTotalQuebra * ((30 - descontarDias) / 30);
 }
 
-        let adicionais = valorDomingoFeriado + valorHorasExtras + valorDobras + valorDobrasDomingo + valorAdicionarDias - valorDescontarDias + insalubridade + quebraCaixa;
+        let adicionais = valorDomingoFeriado + valorHorasExtras + valorDobras + valorDobrasDomingo + valorAdicionarDias + insalubridade + quebraCaixa;
         let salarioTotal = salario + adicionais;
 
         document.getElementById("valorDomingoFeriado").textContent = formatarMoeda(valorDomingoFeriado);
