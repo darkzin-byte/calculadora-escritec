@@ -204,7 +204,7 @@ if (cargo === "caixa") {
 }
 
         let adicionais = valorDomingoFeriado + valorHorasExtras + valorDobras + valorDobrasDomingo + valorAdicionarDias + insalubridade + quebraCaixa;
-        let salarioTotal = salario + adicionais;
+        let salarioTotal = salario + valorDomingoFeriado + valorHorasExtras + valorDobras + valorDobrasDomingo + valorAdicionarDias + insalubridade + quebraCaixa - valorDescontarDias;
 
         document.getElementById("valorDomingoFeriado").textContent = formatarMoeda(valorDomingoFeriado);
         document.getElementById("valorHorasExtras").textContent = formatarMoeda(valorHorasExtras);
